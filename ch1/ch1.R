@@ -8,7 +8,7 @@ library(gtsummary)
 library(forestmodel)
 
 #테이블 만들기
-dt1<-read_csv("C:\\Users\\phl02\\Desktop\\P\\bio\\Ch1_table1.csv") 
+dt1<-read_csv("C:\\Users\\phl02\\Desktop\\P\\bio\\ch1\\Ch1_table1.csv") 
 
 dt1 %>%
   select(-id, -hcc_yr, -m6_alb) %>%
@@ -18,7 +18,7 @@ dt1 %>%
   modify_spanning_header( c('stat_1','stat_2')~'**Liver Function**') 
 
 # Multivariable analysis table
-dt2<-read_csv("C:\\Users\\phl02\\Desktop\\P\\bio\\Ch1_multi.csv")
+dt2<-read_csv("C:\\Users\\phl02\\Desktop\\P\\bio\\ch1\\Ch1_multi.csv")
 
 fit.multi <- glm(Group~CurrentUser+Age+RaceGroup+Gender+
                    HBV+HCV+Cirrhosis+IBD+Diabetes+Obesity+

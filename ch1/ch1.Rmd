@@ -19,7 +19,7 @@ library(forestmodel)
 
 # 테이블 만들기  
 ```{r,message=FALSE,warning = FALSE}
-dt1<-read_csv("C:\\Users\\phl02\\Desktop\\P\\bio\\Ch1_table1.csv") 
+dt1<-read_csv("C:\\Users\\phl02\\Desktop\\P\\bio\\ch1\\Ch1_table1.csv") 
 
 dt1 %>%
   select(-id, -hcc_yr, -m6_alb) %>%
@@ -31,7 +31,7 @@ dt1 %>%
 \newpage
 # Multivariable analysis table  
 ```{r,message=FALSE,warning = FALSE}
-dt2<-read_csv("C:\\Users\\phl02\\Desktop\\P\\bio\\Ch1_multi.csv")
+dt2<-read_csv("C:\\Users\\phl02\\Desktop\\P\\bio\\ch1\\Ch1_multi.csv")
 
 fit.multi <- glm(Group~CurrentUser+Age+RaceGroup+Gender+
                    HBV+HCV+Cirrhosis+IBD+Diabetes+Obesity+
