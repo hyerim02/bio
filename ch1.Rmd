@@ -1,4 +1,13 @@
+---
+title: "CH1"
+date: "2023-06-03"
+output:
+  pdf_document:
+    latex_engine: xelatex
+mainfont: NanumGothic
+---
 # 패키지
+```{r,message=FALSE}
 library(tidyverse)
 library(survival)
 library(survminer)
@@ -6,8 +15,10 @@ library(ggsci)
 library(ggsignif)
 library(gtsummary)
 library(forestmodel)
+```  
 
-#테이블 만들기
+# 테이블 만들기  
+```{r,message=FALSE,warning = FALSE}
 dt1<-read_csv("C:\\Users\\phl02\\Desktop\\P\\bio\\Ch1_table1.csv") 
 
 dt1 %>%
@@ -16,8 +27,10 @@ dt1 %>%
   add_p() %>% 
   add_overall() %>% 
   modify_spanning_header( c('stat_1','stat_2')~'**Liver Function**') 
-
-# Multivariable analysis table
+```  
+\newpage
+# Multivariable analysis table  
+```{r,message=FALSE,warning = FALSE}
 dt2<-read_csv("C:\\Users\\phl02\\Desktop\\P\\bio\\Ch1_multi.csv")
 
 fit.multi <- glm(Group~CurrentUser+Age+RaceGroup+Gender+
@@ -28,26 +41,35 @@ fit.multi <- glm(Group~CurrentUser+Age+RaceGroup+Gender+
 tbl_regression(fit.multi, exponentiate = T) %>% 
   bold_labels() %>% 
   bold_p()
+```  
+\newpage  
 
-#Forest plot
+# Forest plot  
+```{r,message=FALSE,warning = FALSE,fig.width=10, fig.height=6}
 forest_model(fit.multi)
+```  
+\newpage  
 
-#NEJM bar 그래프
-
+# NEJM bar 그래프
+```{r,message=FALSE,warning = FALSE}
 ggplot(dt1,aes(x= Sex, y=Platelet, fill=factor(HCC)))+
   geom_bar(stat='identity', position='dodge')+
   theme_bw()+
   scale_fill_nejm()+
   geom_signif(comparisons = list(c('F','M')))
+```
+\newpage  
 
-#JCO KM 그래프
-
+# JCO KM 그래프
+```{r,message=FALSE,warning = FALSE,fig.width=7, fig.height=7}
 km1<-survfit(Surv(hcc_yr, HCC)~LC, data=dt1)
 
 ggsurvplot(km1,palette = 'jco',risk.table = T)
+```  
+\newpage  
 
-#Waterfall 그래프
-
+# Waterfall 그래프
+```{r,message=FALSE,warning = FALSE}
 dt1 %>% 
   filter(id<=30) %>% 
   select(id,Sex,Albumin,m6_alb) %>% 
@@ -56,5 +78,4 @@ dt1 %>%
             fill='Sex',
             sort.val='desc',
             sort.by.groups = FALSE)
-
-
+```
