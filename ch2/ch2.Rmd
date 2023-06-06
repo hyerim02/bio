@@ -1,0 +1,363 @@
+---
+title: "CH2"
+date: "2023-06-06"
+output:
+  pdf_document:
+    latex_engine: xelatex
+mainfont: NanumGothic
+---
+# 5. Factor 다루기  
+## 5.1 Factor로 변환하기  
+데이터에서 자료의 형태는 연속형도 있지만, 범주형 변수도 있음  
+R에서는 범주형을 factor형태로 다루게 됨  
+
+```{r,message=FALSE}
+library(tidyverse)
+dat <- read.csv("C:\\Users\\phl02\\Desktop\\P\\bio\\ch2\\Ch2_chb.csv")
+```  
+```{r}
+dat1<-dat
+class(dat1$gender)
+```   
+```{r}
+table(dat1$gender)
+```  
+```{r,message=FALSE}
+dat1$sex1<-as.factor(dat1$gender)
+class(dat1$sex1)
+```   
+```{r}
+table(dat1$sex1)
+```
+\newpage 
+```{r,message=FALSE}
+dat1$sex2<-as_factor(dat1$gender)
+class(dat1$sex2)
+```   
+```{r}
+table(dat1$sex2)
+```  
+as.factor,factor와 as_factor의 차이는 F,M의 순서  
+여기서 level의 개념이 적용됨
+\newpage  
+
+## 5.2 Factor level 이해하기    
+factor에서 level이란 범주형 변수값의 순서  
+```{r,message=FALSE,warning = FALSE}
+dat1$risk_gr1<-as.factor(dat1$risk_gr)
+levels(dat1$risk_gr1)
+```    
+```{r}  
+dat1$risk_gr2<-factor(dat1$risk_gr,
+                      levels=c('low','intermediate','high'))
+levels(dat1$risk_gr2)
+```
+\newpage
+## 5.3 forcat 패키지
+```{r,message=FALSE,warning = FALSE}
+dat1$region<-factor(dat1$region)
+table(dat1$region)
+```  
+```{r,message=FALSE,warning = FALSE}
+dat1$region1<-fct_infreq(dat1$region)
+levels(dat1$region1)
+``` 
+```{r,message=FALSE,warning = FALSE}
+dat1$region2 <-fct_recode(dat1$region,
+                          'north' = 'seoul',
+                          'north' = 'incheon',
+                          'south' = 'gwangju',
+                          'south' = 'jeju',
+                          'south' = 'sejong',
+                          'south' = 'daejun',
+                          'east' = 'daegu',
+                          'east' = 'busan')
+```  
+```{r,message=FALSE,warning = FALSE}
+dat1$region3 <- fct_collapse(dat1$region,
+                             'north' = c('seoul','incheon'),
+                             'south' = c('gwangju','jeju','sejong','daejun'),
+                             'east' = c('daegu','busan'))
+dat1 %>% 
+  count(region, region2, region3)
+```  
+\newpage 
+```{r,message=FALSE,warning = FALSE}
+dat1$region4 <- fct_lump(dat1$region, n=4)
+dat1 %>% 
+  count(region,region4)
+```  
+\newpage  
+
+# 6. 기술통계
+```{r,message=FALSE,warning = FALSE}
+Hmisc::describe(dat$age)
+```  
+\newpage  
+
+# 7. 데이터 수정 및  결측치
+```{r,message=FALSE,warning = FALSE}
+dat[dat$dna=='undetectable',]   
+```  
+```{r}
+dat[19, 'dna'] <- '0'  
+dat$dna
+```  
+```{r}
+class(dat$dna)    
+```
+```{r}
+dat$dna <- as.numeric(dat$dna) 
+class(dat$dna)
+```   
+\newpage
+## 7.1 결측값 확인
+```{r}  
+mean(dat$alb)
+```
+```{r}  
+mean(dat$alb, na.rm=T)
+```
+```{r}  
+is.na(dat$alb)
+```
+```{r}  
+sum(is.na(dat$alb))
+```   
+\newpage 
+## 7.2 결측값 한 번에 확인  
+```{r}  
+rowSums(is.na(dat))
+```
+```{r}  
+barplot(rowSums(is.na(dat)))
+```
+```{r}  
+na.count <- apply(dat, 2, function(x) sum(is.na(x)))
+na.count
+```  
+\newpage 
+```{r}  
+barplot(na.count[na.count>0])
+``` 
+\newpage  
+
+## 7.3 패키지 이용
+
+```{r,message=FALSE,warning = FALSE,fig.width=6, fig.height=2.5}
+library(VIM)
+
+missing <- aggr(dat, col=c('navyblue','yellow'),
+                numbers=TRUE, sortVars=TRUE,
+                labels=names(dat1), cex.axis=.7,
+                gap=3,
+                ylab=c('Missing data','Pattern'))
+```   
+```{r}
+missing
+```
+\newpage  
+# 8. apply 함수  
+## 8.1  tapply
+```{r,message=FALSE,warning = FALSE}
+tapply(dat$age, dat$gender, mean)
+```  
+```{r,message=FALSE,warning = FALSE}
+dat %>% 
+  group_by(gender) %>% 
+  summarise(mean(age))
+```    
+## 8.2 sapply
+```{r,message=FALSE,warning = FALSE}
+sapply(dat, class)
+```  
+## 8.3  lapply
+```{r,message=FALSE,warning = FALSE}
+lapply(dat[,c('age','gender')],class)
+```  
+\newpage  
+# 10. 중복 결과값 다루기  
+## 10.1  unique 함수 사용  
+```{r,message=FALSE,warning = FALSE}
+dat$cr
+``` 
+```{r,message=FALSE,warning = FALSE}
+length(dat$cr)
+``` 
+```{r,message=FALSE,warning = FALSE}
+unique(dat$cr)
+``` 
+```{r,message=FALSE,warning = FALSE}
+length(unique(dat$cr))
+``` 
+```{r,message=FALSE,warning = FALSE}
+unique(dat$gender, dat$cr)
+``` 
+\newpage 
+```{r,message=FALSE,warning = FALSE}
+unique(dat[,c('gender','cr')])
+``` 
+\newpage  
+```{r,message=FALSE,warning = FALSE}
+dat %>% 
+  distinct(gender, cr)
+```   
+\newpage  
+## 10.2  Duplicated함수 사용
+```{r,message=FALSE,warning = FALSE}
+dat$gender
+``` 
+```{r,message=FALSE,warning = FALSE}
+duplicated(dat$gender)
+``` 
+```{r,message=FALSE,warning = FALSE}
+temp<-rbind(dat, dat[c(3,6,10),])
+``` 
+```{r,message=FALSE,warning = FALSE}
+duplicated(temp$id)
+``` 
+```{r,message=FALSE,warning = FALSE}
+!duplicated(temp$id)
+```  
+```{r,message=FALSE,warning = FALSE}
+temp1<-temp[!duplicated(temp$id),]
+unique(temp1$id)
+```  
+\newpage
+# 11. Table 1 만들기
+## 11.1 moonBook 패키지
+```{r,message=FALSE,warning = FALSE}
+library(moonBook)
+mytable(treat_gr~age+gender+lc+alt+bil+
+          inr+cr+plt+alb+eag+dna_log,
+        data=dat)
+``` 
+\newpage
+```{r,message=FALSE,warning = FALSE}
+mytable(treat_gr~age+gender+lc+alt+bil+
+          inr+cr+plt+alb+eag+dna_log, 
+        data=dat, method=2)
+``` 
+\newpage
+```{r,message=FALSE,warning = FALSE}
+mytable(treat_gr~age+gender+lc+alt+bil+
+          inr+cr+plt+alb+eag+dna_log, 
+        data=dat, show.total=T)
+``` 
+\newpage
+```{r,message=FALSE,warning = FALSE}
+mytable(~age+gender+lc+alt+bil+
+          inr+cr+plt+alb+eag+dna_log, 
+        data=dat)  
+``` 
+\newpage
+```{r,message=FALSE,warning = FALSE}
+table1 <-mytable(treat_gr~age+gender+lc+alt+bil+
+          inr+cr+plt+alb+eag+dna_log, 
+        data=dat, method=2)
+mycsv(table1, file='C:\\Users\\phl02\\Desktop\\P\\bio\\ch2\\table1.csv',row.names=FALSE)
+```   
+\newpage
+## 11.2 tableone 패키지
+```{r,message=FALSE,warning = FALSE}
+library(tableone)
+listVars <- names(dat[, c('age','gender','lc','alt','bil',
+                          'inr','cr','plt','alb','eag','dna_log')]) 
+catVars <- c('gender','lc') 
+table1 <- CreateTableOne(vars = listVars,
+                         factorVars = catVars,
+                         strata = c('treat_gr'),
+                         data = dat)
+table1
+```  
+\newpage
+```{r}
+summary(table1)
+```  
+\newpage
+```{r}
+write.csv(print(table1), file='C:\\Users\\phl02\\Desktop\\P\\bio\\ch2\\tableone.csv')  
+```
+\newpage
+## 11.3 gtsummary 패키지  
+```{r,message=FALSE,warning = FALSE}
+library(gtsummary)
+
+dat.temp<-dat %>%       
+  select(treat_gr,gender, age, lc, bil, inr, cr, dna_log)
+```
+\newpage
+### 기본 테이블
+```{r,message=FALSE,warning = FALSE}
+tbl_summary(dat.temp)
+```
+\newpage
+### 두 그룹으로 나누기
+```{r,message=FALSE,warning = FALSE}
+tbl_summary(dat.temp, by=treat_gr)
+```
+\newpage
+### 결측값 숨기기
+```{r,message=FALSE,warning = FALSE}
+tbl_summary(dat.temp, by=treat_gr, missing='no')
+```
+\newpage
+### 결측값 다른 문구로 표시
+```{r,message=FALSE,warning = FALSE}
+tbl_summary(dat.temp, by='treat_gr', missing_text='missing value')
+```
+\newpage
+### 평균과 표준편차로 나타내기
+```{r,message=FALSE,warning = FALSE}
+tbl_summary(dat.temp, by=treat_gr,
+            statistic=all_continuous()~ '{mean} \u00b1 {sd}',
+            missing='no')
+```
+\newpage
+### p값 표시
+```{r,message=FALSE,warning = FALSE}
+tbl_summary(dat.temp, by=treat_gr,
+            missing='no') %>%
+  add_p()
+```
+\newpage
+### 전체 N수 표시
+```{r,message=FALSE,warning = FALSE}
+tbl_summary(dat.temp, by=treat_gr,
+            missing='no') %>%
+  add_n()
+```
+\newpage
+### 전체 환자 특성 같이 보여주기
+```{r,message=FALSE,warning = FALSE}
+tbl_summary(dat.temp, by=treat_gr,
+            missing='no') %>%
+  add_overall()
+```
+\newpage
+### 테이블 제목 변경
+```{r,message=FALSE,warning = FALSE}
+dat.temp %>% 
+  tbl_summary(by=treat_gr,
+              missing='no') %>% 
+  modify_caption('**Baseline Characteristics**')
+```
+\newpage
+### 테이블 소제목 변경
+```{r,message=FALSE,warning = FALSE}
+dat.temp %>% 
+  tbl_summary(by=treat_gr,
+              missing='no') %>% 
+  modify_spanning_header( c('stat_1','stat_2')~'**Antiviral Treatment**') 
+```
+\newpage
+### 최종 출판용으로 정리된 테이블
+```{r,message=FALSE,warning = FALSE}
+tbl_summary(dat.temp,
+            by=treat_gr,
+            missing='no') %>% 
+  add_p() %>% 
+  add_overall() %>% 
+  modify_spanning_header( c('stat_1','stat_2')~'**Antiviral Treatment**') %>% 
+  modify_caption('**Baseline Characteristics**')
+```
