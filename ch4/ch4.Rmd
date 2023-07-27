@@ -1,0 +1,226 @@
+---
+title: "CH4"
+date: "2023-07-27"
+output:
+  pdf_document:
+    latex_engine: xelatex
+mainfont: NanumGothic
+---
+# 1. Merge
+## (1) rbind
+
+```{r,message = FALSE}
+library(tidyverse)
+dat <- read.csv("C:\\Users\\phl02\\Desktop\\P\\bio\\ch4\\Ch4_chb.csv")
+```  
+```{r}
+a <- c(1,2,3)
+b <- c(4,5,6)
+c <- rbind(a,b)
+c 
+```   
+```{r,warning=FALSE}
+a <- c(1,2,3,4)
+b <- c(5,6,7)
+c <- rbind(a,b)
+c
+```
+
+\newpage
+### 실제 데이터프레임 형태의 데이터를 이용해서 실습
+```{r}
+temp1 <- dat %>% 
+  select(id, age, lc, hcc) %>% 
+  filter(id<5) %>% 
+  print()
+```  
+```{r}
+temp2 <- dat %>% 
+  filter(id>6) %>% 
+  select(id, age, lc, hcc) %>% 
+  print()
+```  
+```{r}
+temp3 <- rbind(temp1, temp2)
+temp3
+```  
+\newpage
+## (2) cbind
+```{r}
+a <- c(1,2,3)
+b <- c(4,5,6)
+c <- cbind(a,b)
+c
+```
+### 실제 데이터프레임 형태의 데이터를 이용해서 실습
+```{r}
+temp4 <- dat %>% 
+  select(id, age, lc, hcc) %>% 
+  filter(id<5) %>% 
+  print()
+```  
+```{r}
+temp5 <- dat %>% 
+  filter(id<5) %>% 
+  select(b_alt, b_bil, b_inr) %>% 
+  print()
+```  
+```{r}
+temp6 <- cbind(temp4, temp5)
+temp6
+```  
+\newpage
+## (3) merge
+```{r}
+temp1 <- dat %>% 
+  filter(id <4) %>% 
+  select(id, age, gender) %>% 
+  print()
+```
+```{r}
+temp2 <- dat %>% 
+  filter(id %in% c(1,2,4,5,6)) %>%  
+  select(id, lc, hcc) %>% 
+  print()
+```  
+
+### inner join  
+
+```{r}
+merge(temp1, temp2, by='id')
+```  
+
+\newpage
+### outer join  
+
+```{r}
+merge(temp1, temp2, by='id', all=TRUE) 
+```  
+
+### left join 
+
+```{r}
+merge(temp1, temp2, by='id', all.x=TRUE)
+```  
+
+### right join  
+
+```{r}
+merge(temp1, temp2, by='id', all.y=TRUE)
+```
+\newpage
+# 2. Tidyverse를 이용한 merge 
+## 2.1 inner join
+```{r}
+inner_join(temp1, temp2, by='id')
+``` 
+## 2.2 full join
+```{r}
+full_join(temp1, temp2, by='id')
+```  
+## 2.3 left join
+```{r}
+left_join(temp1, temp2, by='id')
+```  
+\newpage
+## 2.4 right join
+```{r}
+right_join(temp1, temp2, by='id')
+```  
+## 2.5 semi join, anti join
+```{r}
+semi_join(temp1, temp2, by='id')
+```
+```{r}
+anti_join(temp1, temp2, by='id')
+```
+\newpage
+## 2.6 intersect, union, setdiff
+```{r}
+temp.x <- dat %>% 
+  select(id, age, gender) %>% 
+  filter(id<4) %>% 
+  print( )
+```
+```{r}
+temp.y <- dat %>% 
+  select(id, age, gender) %>% 
+  filter(between (id, 2, 4)) %>% 
+  print( )
+```
+```{r}
+intersect(temp.x, temp.y)
+```
+```{r}
+union(temp.x, temp.y)
+```
+```{r}
+setdiff(temp.x, temp.y)
+```
+\newpage
+## 2.7 bind_rows, bind_cols
+```{r}
+bind_rows(temp.x, temp.y)
+```
+```{r}
+bind_cols(temp.x, temp.y)
+```  
+
+rbind와는 다른 기능  
+서로 다른 그룹의 데이터를 합치면서 그룹의 이름을 1개의 새로운 변수로 만들 수 있음  
+
+```{r}
+bind_rows(entecavir=temp.x, tenofovir=temp.y, .id = 'treatment')
+```
+\newpage
+# 3. Tidy 데이터  
+```{r,message = FALSE}
+library(tidyverse)
+dat <- read.csv("C:\\Users\\phl02\\Desktop\\P\\bio\\ch4\\Ch4_chb2.csv")
+``` 
+## 3.1 Tidy데이터의 특징
+임상연구 데이터에서 행은 환자 1명을 의미하며 가로로 수집한 변수들이 계속 나열되게 됨  
+==> 시각화와 분석을 할 때는 tidy한 데이터 형태가 더 다루기 쉬움  
+
+
+### tidy 형태 특징  
+
+- 각 변수는 개별 열로 되어 있어야 함
+- 개별 관찰치는 행으로 되어 있어야 함
+- 개별 테이블은 개별 관찰치에 의해 만들어진 데이터를 나타내야 함
+- 만약 여러 개의 테이블이 존재한다면 최소 1개 이상의 열이 공유  
+
+\newpage
+## 3.2 Tidy 데이터 만들기 연습  
+### long 형태로 변형
+
+```{r}
+alt.long <- dat %>% 
+  gather(2:6, key='observation', value='alt_result') %>% 
+  arrange(id)
+head(alt.long,10)
+```
+
+```{r}
+dim(dat)
+```
+```{r}
+dim(alt.long)
+```
+
+\newpage
+### wide 형태로 변형
+```{r}
+alt.wide<-alt.long %>% 
+  spread(observation, alt_result)
+head(alt.wide,10)
+```
+```{r}
+dim(alt.long)
+```
+```{r}
+dim(alt.wide)
+```
+
+
+
