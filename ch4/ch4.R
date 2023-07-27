@@ -1,4 +1,4 @@
-#CH3. 데이터 핸들링
+#CH4. 데이터 분리와 합치기기
 library(tidyverse)
 dat <- read.csv("C:\\Users\\phl02\\Desktop\\P\\bio\\ch4\\Ch4_chb.csv")
 # 4.1.1 rbind
