@@ -865,7 +865,7 @@ ggscatter(dat1, x='age',  y='b_alb',
 \newpage 
 
 - 박스
-```{r}
+```{r,warning=FALSE}
 ggscatter(dat1, x='age',  y='b_alb',
           color='gender') %>%
   ggMarginal(type='boxplot')
