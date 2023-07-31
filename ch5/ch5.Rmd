@@ -1,0 +1,915 @@
+---
+title: "CH5"
+date: "2023-07-31"
+output:
+  pdf_document:
+    latex_engine: xelatex
+mainfont: NanumGothic
+---
+
+```{r,message = FALSE}
+library(tidyverse)
+dat <- read.csv("C:\\Users\\phl02\\Desktop\\P\\bio\\ch5\\Ch5_chb.csv")
+dat1<-dat
+``` 
+```{r}
+dim(dat1)
+```
+```{r}
+colnames(dat1)
+```
+
+\newpage
+# 1. R base 그래프
+## 1.1 기본 그래프 그려보기  
+```{r}
+table(dat1$gender)
+```
+### (1) 막대 그래프
+```{r}
+barplot(table(dat1$gender))
+``` 
+\newpage
+
+### (2) 파이 그래프
+```{r}
+pie(table(dat1$gender))
+```  
+\newpage
+
+### (3) 히스토그램
+```{r}
+hist(dat1$age)
+```
+\newpage
+
+### (4) 박스 그래프
+```{r}
+boxplot(dat1$age)
+```
+\newpage
+
+### (5) 점 그래프
+```{r}
+dotchart(dat1$age)
+```
+\newpage
+
+### (6) 줄기 잎 그래프
+```{r}
+stem(dat1$age)
+```
+\newpage
+
+### (7) 산점도
+```{r}
+plot(dat1$b_alb, dat1$b_plt)  
+```
+\newpage
+
+### (8) 선 그래프
+```{r}
+plot(dat1$age, type='l') 
+```
+
+\newpage
+
+## 1.2 기본 그래프의 옵션  
+점,선,축 등의 모양,색상,굵기,음영,투명도,추가선 
+
+### (1) 점 모양  
+
+```{r}
+plot(dat1$b_alb, dat1$b_plt, pch=17)
+```  
+\newpage  
+
+### (2) 점 크기  
+
+```{r}
+plot(dat1$b_alb, dat1$b_plt, pch=17, cex=2)
+```  
+\newpage  
+
+### (3) 색깔 변경  
+
+```{r}
+plot(dat1$b_alb, dat1$b_plt, col='blue')
+```  
+\newpage  
+
+### (4) 선 종류  
+
+```{r}
+plot(dat1$age, type='l')
+```  
+\newpage  
+
+```{r}
+plot(dat1$age, type='l', lty=2)
+```  
+\newpage  
+
+### (5) 선 두께  
+
+```{r}
+plot(dat1$age, type='l', lwd=3)
+```  
+\newpage  
+
+### (6) 축 색상 
+
+```{r}
+plot(dat1$b_alb, dat1$b_plt, col.axis='blue')
+```    
+\newpage  
+
+### (7) 축 이름 색상 변경  
+
+```{r}
+plot(dat1$b_alb, dat1$b_plt, col.lab='blue')
+```  
+\newpage  
+
+### (8) 그래프 제목 붙이고 색상 변경  
+
+```{r}
+plot(dat1$b_alb, dat1$b_plt,
+     main='Albumin and Platelet',
+     col.main='red')
+```  
+\newpage    
+
+### (9) 축 이름 변경  
+
+```{r}
+plot(dat1$b_alb, dat1$b_plt, xlab='Baseline Albumin',ylab='Baseline Platelet')
+```  
+
+\newpage   
+
+### (10) 그래프 선 추가하기  
+
+```{r}
+par(mfrow=c(1,2))
+plot(dat1$age, dat1$b_plt, 
+     xlab='Age', ylab='Baseline platelet')
+fit<-lm(b_plt~age, data=dat1)    
+plot(dat1$age, dat1$b_plt, 
+     xlab='Age', ylab='Baseline platelet')
+lines(dat1$age, fit$fitted.values, col='blue', lwd=2)
+```  
+\newpage   
+
+### (11) 그래프에 수평 혹은 수직 라인 추가  
+
+```{r}
+plot(dat1$age, dat1$b_plt, 
+     xlab='Age', ylab='Baseline platelet')
+abline(v=mean(dat1$age), col='red', lwd=2)
+abline(h=mean(dat1$b_plt), col='blue', lwd=2)
+```  
+\newpage   
+
+### (12) 그래프에 text추가  
+
+```{r}
+plot(dat1$id, dat1$b_alb, 
+     xlab='ID', ylab='Baseline Albumin')
+text(dat1$id, dat1$b_alb, 
+     labels=dat1$b_alb, pos=3)
+```  
+\newpage   
+
+## 1.3 다중 그래프 그리기
+```{r}
+par(mfrow=c(2,2))
+plot(dat1$b_alb, dat1$b_plt)  
+plot(dat1$b_alb, dat1$b_plt, pch=17)  
+plot(dat1$b_alb, dat1$b_plt, col='blue')  
+plot(dat1$b_alb, dat1$b_plt,
+     main='Association between Albumin and Platelet') 
+```  
+\newpage   
+
+# 2. ggplot2  
+## 2.1 ggplot2 기본 문법  
+### (1) 레이어   
+여러 개의 레이어가 차곡차곡 쌓여서 만들어지는 그래픽 문법이 ggplot2  
+
+### (2) 시작  
+그래프 도면  
+
+```{r}
+ggplot(dat1, aes(x=id, y=b_alb))
+```  
+\newpage  
+
+geometrices 추가하기  
+
+```{r}
+ggplot(dat1, aes(x=id, y=b_alb))+
+  geom_point()
+```  
+\newpage  
+
+## 2.2 막대 그래프  
+### (1) 빈도
+```{r}
+ggplot(dat1, aes(x=hcc))+
+  geom_bar()
+```  
+hcc가 numeric형태여서 x축이 연속형이 나옴
+범주형이므로 factor로 변경
+\newpage  
+```{r}
+ggplot(dat1, aes( x=factor(hcc) ))+
+  geom_bar()
+```    
+\newpage  
+
+### (2) 고유값
+```{r}
+ggplot(dat1, aes(x=id, y=b_alb))+
+  geom_bar(stat='identity')
+```  
+\newpage  
+
+### (3) 막대 그래프 색상 변경하기  
+
+```{r}
+ggplot(dat1, aes(x=id, y=b_alb,fill=gender))+
+  geom_bar(stat='identity')
+```  
+\newpage   
+
+ggplot2는 코드 순서대로 실행되기 때문에 색상이 덮이게 됨
+```{r}
+ggplot(dat1, aes(x=id, y=b_alb, fill=gender))+
+  geom_bar(stat='identity', fill='lightblue')
+```  
+\newpage  
+
+### (4)  옆으로 나란한 막대 그리기  
+
+성별에 따른 간암 환자수와 간암 유무에 따른 숫자를 각각 표시
+```{r}
+ggplot(dat1, aes(x= gender, fill=factor(hcc)))+
+  geom_bar(stat='count', position='dodge')
+```  
+\newpage  
+
+### (5) 누적 비율 막대 그래프 그리기 
+```{r}
+ggplot(dat1, aes(x= gender, fill=factor(hcc)))+
+  geom_bar(position='fill')
+```  
+\newpage  
+
+### (6) 막대 그래프에서 x축,y축 변경 
+```{r}
+ggplot(dat1, aes(x= gender, fill=factor(hcc)))+
+  geom_bar(stat='count', position='dodge')+
+  coord_flip()
+```  
+\newpage  
+
+### (7) 색상 변경 
+```{r}
+ggplot(dat1, aes(x= gender, fill=factor(hcc)))+
+  geom_bar(stat='count', position='dodge')+
+  scale_fill_manual(values=c('blue','red'))  
+```
+\newpage  
+
+### (8) 자동 색상 선택 
+```{r}
+ggplot(dat1, aes(x= gender, fill=factor(hcc)))+
+  geom_bar(stat='count', position='dodge')+
+  scale_fill_brewer(palette='Greens')
+```
+\newpage  
+
+### (9) 테두리 색 입히기 
+```{r}
+ggplot(dat1, aes(x= gender, fill=factor(hcc)))+
+  geom_bar(stat='count', position='dodge', color='black')
+```
+\newpage  
+
+### (10) 너비 조절 
+```{r}
+ggplot(dat1, aes(x= gender, fill=factor(hcc)))+
+  geom_bar(stat='count', position='dodge', color='black', width=0.5)
+```
+\newpage  
+
+### (11) 투명도 조절 
+```{r}
+ggplot(dat1, aes(x= gender, fill=factor(hcc)))+
+  geom_bar(stat='count', position='dodge', color='black', alpha=0.5)
+```
+\newpage  
+
+### (12) 막대 그래프에 데이터 값 추가하기 
+```{r}
+ggplot(dat1, aes(x=id, y=b_alb))+
+  geom_bar(stat='identity')+
+  geom_text(aes(label=b_alb), vjust=-0.5)
+```  
+\newpage   
+
+## 2.3 박스 그래프  
+### (1) 박스 그래프 그리기  
+```{r}
+ggplot(dat1, aes(x=gender, y=b_alb))+
+  geom_boxplot()
+```  
+\newpage  
+
+### (2) 색상,폭,투명도 변경 
+```{r}
+ggplot(dat1, aes(x=gender, y=b_alb))+
+  geom_boxplot(fill='cyan', color='blue', alpha=0.5)
+```  
+\newpage   
+
+## 2.4 선 그래프 
+### (1) 기본 
+```{r}
+ggplot(dat1, aes(x=id, y=age))+
+  geom_line()
+```  
+\newpage  
+
+### (2) 선 종류 변경 및 두께 
+```{r}
+ggplot(dat1, aes(x=id, y=age))+
+  geom_line(color='red', linetype=6,linewidth=3)
+```  
+\newpage   
+
+### (3) 축 최소,최대 변경 
+```{r}
+ggplot(dat1, aes(x=id, y=age))+
+  geom_line()+
+  ylim(c(10,80))
+```  
+\newpage   
+
+## 2.5 산점도 
+### (1) 기본  
+```{r}
+ggplot(dat1, aes(x=id, y=age))+
+  geom_point()
+```  
+\newpage   
+
+### (2) 점 모양 변경 
+```{r}
+ggplot(dat1, aes(x=id, y=age))+
+  geom_point(shape=1)
+```
+\newpage    
+
+### (3) 그룹에 따라 다르게 표시 
+```{r}
+ggplot(dat1, aes(x=id, y=age, shape=factor(lc)))+
+  geom_point()
+```
+\newpage    
+
+### (4) 복합조건 
+```{r}
+ggplot(dat1, aes(x=id, y=age, color=factor(lc), size=b_alb))+
+  geom_point()+
+  geom_text(aes(label=b_alb), vjust=-2, size=3)+
+  scale_color_brewer(palette='Set1')
+```  
+\newpage  
+
+## 2.6 버블 그래프
+```{r}
+ggplot(dat1, aes(x=age, y=b_alb))+
+  geom_point(aes(size=b_alt),shape=21, color='black', fill='orange')
+```  
+\newpage  
+
+## 2.7 히스토그램 
+### (1) 히스토그램 그리기 
+```{r}
+ggplot(dat1, aes(x=b_alb))+
+  geom_histogram()
+``` 
+\newpage   
+
+### (2) 너비 조절 
+```{r}
+ggplot(dat1, aes(x=b_alb))+
+  geom_histogram(binwidth = 0.5)
+```  
+\newpage   
+
+### (3) 색상과 테두리  
+```{r}
+ggplot(dat1, aes(x=b_alb))+
+  geom_histogram(binwidth=0.2, fill='lightblue',color='black')
+```  
+\newpage   
+
+### (4) 그룹별 히스토그램  
+```{r}
+ggplot(dat1, aes(x=b_alb, fill=factor(lc)))+
+  geom_histogram(binwidth = 0.2)
+```  
+\newpage   
+
+### (5) 그룹별로 나누어서 히스토그램 
+```{r}
+ggplot(dat1, aes(x=b_alb))+
+  geom_histogram(binwidth = 0.2)+
+  facet_grid(lc~.)
+```  
+\newpage  
+
+## 2.8 밀도 그래프 
+### (1) 밀도 곡선 그리기 
+```{r}
+ggplot(dat1, aes(x=b_alb))+
+  geom_density()
+```
+\newpage   
+
+### (2) 그룹별 밀도 곡선 겹쳐 그리기 
+```{r}
+ggplot(dat1, aes(x=b_alb, color=factor(lc)))+
+  geom_density()
+```  
+\newpage   
+
+### (3) 그룹별 밀도 곡선 겹쳐 그리기/영역 다르게 
+```{r}
+ggplot(dat1, aes(x=b_alb, fill=factor(lc)))+
+  geom_density(alpha=0.5)
+```  
+\newpage  
+
+# 3. ggplot2의 다양한 옵션  
+알부민과 관련된 변수들을 중심으로 선택해서 데이터를 새로 만들었음
+
+```{r}
+albu<-dat1 %>% 
+  select(id, age, gender, treat_gr, lc, contains('alb')) %>% 
+  gather(6:10, key='observation', value='albumin')
+```
+
+변수들 확인  
+```{r}
+str(albu)
+```
+factor형으로 변경  
+```{r}
+albu$gender<-factor(albu$gender, levels = c('M','F'))
+albu$treat_gr<-factor(albu$treat_gr)
+albu$lc<-factor(albu$lc)
+```
+\newpage 
+
+## 3.1 축  
+### (1) x축y축 서로 바꾸기
+
+```{r}
+ggplot(albu, aes(x=gender, y=albumin))+
+  geom_boxplot()+
+  coord_flip()
+```
+\newpage 
+
+### (2) 축의 범위 설정 
+
+```{r}
+ggplot(albu, aes(x=gender, y=albumin))+
+  geom_boxplot()+
+  ylim(1,5.5)
+```  
+\newpage 
+
+### (3) 축의 작은 눈금 설정  
+
+```{r}
+ggplot(albu, aes(x=gender, y=albumin))+
+  geom_boxplot()+
+  scale_y_continuous(limits=c(1,5), breaks=c(seq(1,5,0.5)))
+```  
+ylim랑 scale_y_continuous 같이 사용할 수 없음
+\newpage 
+
+### (4) 축 눈금 임의로 설정
+
+```{r}
+ggplot(albu, aes(x=gender, y=albumin))+
+  geom_boxplot()+
+  scale_y_continuous(labels=c('very low','low','normal','high'))
+```  
+\newpage 
+
+### (5) 축의 이름의 위치,형태 변경 
+
+```{r}
+ggplot(albu, aes(x=gender, y=albumin))+
+  geom_boxplot()+
+  scale_y_continuous(labels=c('very low','low','normal','high'))+
+  theme(axis.text.y=element_text(angle=45))
+```  
+\newpage 
+
+### (6) 축 이름 변경 
+
+```{r}
+ggplot(albu, aes(x=gender, y=albumin))+
+  geom_boxplot()+
+  xlab('Sex')+
+  ylab('Serum Albumin Level at Baseline')
+```  
+\newpage 
+
+### (7) 로그 변환 축 사용 
+
+```{r}
+ggplot(albu, aes(x=age, y=albumin))+
+  geom_point()+
+  scale_x_log10()
+```  
+\newpage 
+
+## 3.2 주석 
+### (1) 텍스트 주석 넣기 
+
+```{r}
+ggplot(albu, aes(x=age, y=albumin))+
+  geom_point()+
+  annotate('text',x=28, y=5, label='Young Age', color='red', size=5)+
+  annotate('text',x=50, y=5, label='Old Age', color='blue', size=5)
+```
+\newpage 
+
+### (2) 선 추가하기 
+
+```{r}
+ggplot(albu, aes(x=age, y=albumin))+
+  geom_point()+
+  geom_abline(intercept=0, slope=0.1, color='red')
+```  
+hline:수평선
+vline:수직선
+abline:기울기와 절편이 있는 직선
+\newpage 
+
+### (3) 오차 막대 추가   
+
+```{r}
+albu1<-albu %>%
+  group_by(lc) %>% 
+  summarize( mean_albumin = mean(albumin, na.rm=T),
+             sd_albumin = sd(albumin, na.rm=T))
+head(albu1)
+```   
+```{r}
+ggplot(albu1, aes(x=lc, y=mean_albumin))+
+  geom_bar(stat='identity')+
+  ylim(c(0,5))+
+  geom_errorbar(aes(ymin=mean_albumin-sd_albumin,
+                    ymax=mean_albumin+sd_albumin), width=0.2)
+```
+\newpage 
+
+## 3.3 legend 
+### (1) 위치 변경 
+
+```{r}
+ggplot(albu, aes(x=gender, y=albumin, fill=lc))+
+  geom_boxplot()+
+  theme(legend.position = 'bottom')
+```
+position에는 'top', 'bottom', 'left', 'right'가 있음
+
+\newpage 
+
+### (2) 그래프 안에 포함 
+
+```{r}
+ggplot(albu, aes(x=gender, y=albumin, fill=lc))+
+  geom_boxplot()+
+  theme(legend.position = c(0.95,0.85))
+```  
+\newpage 
+
+### (3) 제목 바꾸기    
+
+```{r}
+ggplot(albu, aes(x=gender, y=albumin, fill=lc))+
+  geom_boxplot()+
+  theme(legend.position = c(0.95,0.85),
+        legend.background = element_blank())+
+  labs(fill='Liver Cirrhosis')
+``` 
+\newpage   
+
+## 3.4 분할 
+### (1) 변수에 따라 화면 자동 분할 
+
+```{r}
+ggplot(albu, aes(x=gender, y=albumin))+
+  geom_boxplot()+
+  facet_grid(lc~.)
+```
+
+\newpage 
+
+세로로 나누어보기 
+```{r}
+ggplot(albu, aes(x=gender, y=albumin))+
+  geom_boxplot()+
+  facet_grid(~lc)
+```  
+\newpage 
+
+동시 분할    
+
+```{r}
+ggplot(albu, aes(x=gender, y=albumin))+
+  geom_boxplot()+
+  facet_grid(~lc+treat_gr)
+```   
+\newpage   
+
+## 3.5 테마  
+### (1) 그래프 제목 붙이기 
+
+```{r}
+ggplot(albu, aes(x=gender, y=albumin))+
+  geom_boxplot()+
+  facet_grid(~lc)+
+  ggtitle('Albumin and LC')
+```
+
+\newpage 
+
+### (2) 기본으로 제공하는 테마들 
+
+```{r}
+ggplot(albu, aes(x=age, y=albumin, color=lc))+
+  geom_point()+
+  theme_bw()
+```  
+theme_bw(): 그래프의 배경색을 하얗게  
+theme_dark(): 그래프의 배경색을 어둡게  
+theme_minimal(): 그래프의 표시가 최소화  
+theme_classic(): x,y축 축이 진하게 표시됨
+\newpage 
+
+## 3.6 한 화면에 그래프 여러 개 그리기
+### (1) 그래프 여러 개 그리기  
+
+```{r}
+alb1<-ggplot(albu, aes(x=gender, y=albumin))+
+  geom_boxplot()+
+  facet_grid(~lc)
+
+alb2<-ggplot(albu, aes(x=age, y=albumin, color=lc))+
+  geom_point()
+```   
+
+```{r,message=FALSE}
+library(gridExtra)
+grid.arrange(alb1, alb2)
+```
+\newpage  
+
+# 3.7 ggplot2 클릭만으로 하기  
+
+필요한 패키지들 
+```{r}
+library(esquisse)
+library(officer)
+library(rvg)
+```
+클릭만 하면 ggplot2의 기능들을 실행할 수 있는 패키지임
+
+
+\newpage 
+
+# 3.8 출판을 위한 출력
+### (1) pdf로 저장  
+```{r}
+pdf('plot1.pdf',width=8, height=8)
+ggplot(albu, aes(x=gender, y=albumin, fill=lc))+
+  geom_boxplot()
+```  
+
+### (2) tiff로 저장     
+
+```{r}
+tiff('plot1.tiff',width=1200, height=1800, res=300)
+ggplot(albu, aes(x=gender, y=albumin, fill=lc))+
+  geom_boxplot()
+```   
+\newpage   
+
+# (3) ggsave 이용 
+
+```{r}
+ggplot(albu, aes(x=gender, y=albumin, fill=lc))+
+  geom_boxplot()
+ggsave('albumin_graph.pdf', width = 10, height=12)
+```
+\newpage  
+```{r}
+ggplot(albu, aes(x=gender, y=albumin, fill=lc))+
+  geom_boxplot()
+ggsave('albumin_graph.tiff', width = 6, height=8, dpi=300)
+```
+\newpage 
+
+# 4. ggpubr 패키지
+```{r,message=FALSE}
+library(ggpubr)
+``` 
+논문 출판을 위한 그래프를 만들어주는 패키지 
+
+## 4.1 히스토그램 
+### (1) 히스토그램 
+```{r,warning=FALSE}
+gghistogram(dat1,
+            x='age',
+            color='gender', fill='gender',
+            palette=c('blue','red'),
+            rug=TRUE)
+```
+\newpage 
+
+## 4.2 밀도 그래프
+### (1) 밀도 곡선 
+```{r,warning=FALSE}
+gghistogram(dat1,
+            x='age',
+            color='gender', fill='gender',
+            palette=c('blue','red'),
+            rug=TRUE)
+```
+\newpage 
+
+## 4.3 박스 그래프
+### (1) 박스 그래프
+```{r}
+ggboxplot(dat1,
+          x='gender', y='b_alb',
+          color='gender')
+```
+\newpage 
+
+### (2)평균비교를 통한 p값 표시하기 
+```{r,warning=FALSE}
+ggboxplot(dat1,
+          x='gender', y='b_alb',
+          color='gender')+
+  stat_compare_means(comparisons= list(c('M','F')))
+```
+\newpage 
+
+## 4.3 막대 그래프
+### (1) 막대 그래프
+```{r}
+ggbarplot(dat1,
+          x='id', y='b_alb',
+          fill='gender')
+```
+\newpage 
+
+내림차순으로 막대 배열
+```{r}
+ggbarplot(dat1,
+          x='id', y='b_alb',
+          fill='gender',
+          sort.val='desc')
+```
+\newpage 
+
+성별 구분 없애기 
+```{r}
+ggbarplot(dat1,
+          x='id', y='b_alb',
+          fill='gender',
+          sort.val='desc',
+          sort.by.group=FALSE)
+```
+\newpage 
+
+# 4.5 워터폴 (waterfall) 그래프
+
+종양의 크기 변화나 혈청학적 마커의 증감을 보여주는데 탁월한 그래프프
+```{r}
+water.dt<-dat1 %>% 
+  select(id,gender,b_alb,m6_alb) %>% 
+  mutate(delta_alb=b_alb-m6_alb)
+water.dt
+```
+\newpage 
+
+```{r}
+ggbarplot(water.dt, 
+          x='id', y='delta_alb',
+          fill='gender')
+```
+\newpage 
+
+내림차순으로 막대 배열
+```{r}
+ggbarplot(water.dt, 
+          x='id', y='delta_alb',
+          fill='gender',
+          sort.val='desc',
+          sort.by.groups = FALSE)
+```
+\newpage 
+
+가로로 나타내기 
+```{r}
+ggbarplot(water.dt, 
+          x='id', y='delta_alb',
+          fill='gender',
+          sort.val='desc',
+          sort.by.groups = FALSE,
+          rotate=TRUE)
+```
+\newpage 
+
+## 4.6 산점도
+### (1) 산점도
+```{r}
+ggscatter(dat1,
+          x='age',
+          y='b_alb',
+          color='gender')
+```
+\newpage 
+
+### (2)산점도에 추가 그래프 넣기 
+- 밀도
+```{r}
+library(ggExtra)
+
+ggscatter(dat1, x='age',  y='b_alb',
+          color='gender') %>%
+  ggMarginal(type='density')
+```
+\newpage 
+
+- 박스
+```{r}
+ggscatter(dat1, x='age',  y='b_alb',
+          color='gender') %>%
+  ggMarginal(type='boxplot')
+```
+\newpage 
+
+- 히스토그램 
+```{r}
+ggscatter(dat1, x='age',  y='b_alb',
+          color='gender') %>%
+  ggMarginal(type='histogram', fill='orange')
+```
+\newpage 
+
+# 5. 상관관계를 그려주는 패키지
+## 5.1 GGally 패키지
+### (1) 변수들 간의 상관관계 한눈에 보기  
+```{r}
+ggscatter(dat1,
+          x='age',
+          y='b_alb',
+          color='gender')
+```
+\newpage 
+
+## 5.2 corrplot 패키지
+### (1) 한눈에 변수들의 상관관계 보기  
+```{r,message=FALSE}
+library(corrplot)
+
+cor.dt<-dat1 %>% 
+  select(age, b_alt, b_plt, b_alb) %>% 
+  na.omit()
+corrplot(cor(cor.dt))
+```
+\newpage 
+
+### (2) 다양한 method옵션 변화 주기 
+
+```{r}
+par(mfrow=c(2,2))    
+corrplot(cor(cor.dt), method='square')
+corrplot(cor(cor.dt), method='ellipse')
+corrplot(cor(cor.dt), method='number')
+corrplot(cor(cor.dt), method='color')
+```
