@@ -751,11 +751,10 @@ gghistogram(dat1,
 ## 4.2 밀도 그래프
 ### (1) 밀도 곡선 
 ```{r,warning=FALSE}
-gghistogram(dat1,
-            x='age',
-            color='gender', fill='gender',
-            palette=c('blue','red'),
-            rug=TRUE)
+ggdensity(dat1,
+          x='age',
+          color='gender', fill='gender',
+          rug=TRUE)
 ```
 \newpage 
 
@@ -777,7 +776,7 @@ ggboxplot(dat1,
 ```
 \newpage 
 
-## 4.3 막대 그래프
+## 4.4 막대 그래프
 ### (1) 막대 그래프
 ```{r}
 ggbarplot(dat1,
@@ -807,7 +806,7 @@ ggbarplot(dat1,
 
 # 4.5 워터폴 (waterfall) 그래프
 
-종양의 크기 변화나 혈청학적 마커의 증감을 보여주는데 탁월한 그래프프
+종양의 크기 변화나 혈청학적 마커의 증감을 보여주는데 탁월한 그래프
 ```{r}
 water.dt<-dat1 %>% 
   select(id,gender,b_alb,m6_alb) %>% 
