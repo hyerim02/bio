@@ -884,10 +884,9 @@ ggscatter(dat1, x='age',  y='b_alb',
 ## 5.1 GGally 패키지
 ### (1) 변수들 간의 상관관계 한눈에 보기  
 ```{r}
-ggscatter(dat1,
-          x='age',
-          y='b_alb',
-          color='gender')
+library(GGally)
+temp<-dat1[, c('age','gender','b_alt','b_plt','b_alb')]
+ggpairs(temp)
 ```
 \newpage 
 
